@@ -1,4 +1,5 @@
 """Turn agent traces into narrated walkthroughs (Markdown / HTML player)."""
+
 from __future__ import annotations
 
 import html
@@ -16,9 +17,19 @@ def load_spans(path: str) -> list[dict]:
         spans = []
         for i, s in enumerate(steps):
             dur = s.get("duration_ms", 0)
-            spans.append({"span_id": str(i), "parent_id": None, "name": s["name"], "kind": s.get("kind", "step"),
-                          "start": t, "duration_ms": dur, "attrs": s.get("attrs", {}), "status": s.get("status", "ok"),
-                          "error": s.get("error")})
+            spans.append(
+                {
+                    "span_id": str(i),
+                    "parent_id": None,
+                    "name": s["name"],
+                    "kind": s.get("kind", "step"),
+                    "start": t,
+                    "duration_ms": dur,
+                    "attrs": s.get("attrs", {}),
+                    "status": s.get("status", "ok"),
+                    "error": s.get("error"),
+                }
+            )
             t += dur / 1000
         return spans
     return [json.loads(l) for l in text.splitlines() if l.strip()]
@@ -77,10 +88,16 @@ def summary(root: dict | None, steps: list[dict]) -> dict:
     slowest = max(steps, key=lambda s: s.get("duration_ms", 0)) if steps else None
     priciest = max(steps, key=lambda s: s.get("attrs", {}).get("cost_usd", 0) or 0) if steps else None
     final_failed = bool(steps) and steps[-1].get("status") == "error"
-    return {"goal": (root or {}).get("attrs", {}).get("input", ""), "steps": len(steps), "seconds": round(total_ms / 1000, 1),
-            "cost_usd": round(cost, 4), "errors": len(errors), "recovered": bool(errors) and not final_failed,
-            "slowest": slowest and (slowest["name"], slowest.get("duration_ms", 0)),
-            "priciest": priciest and (priciest["name"], priciest.get("attrs", {}).get("cost_usd", 0))}
+    return {
+        "goal": (root or {}).get("attrs", {}).get("input", ""),
+        "steps": len(steps),
+        "seconds": round(total_ms / 1000, 1),
+        "cost_usd": round(cost, 4),
+        "errors": len(errors),
+        "recovered": bool(errors) and not final_failed,
+        "slowest": slowest and (slowest["name"], slowest.get("duration_ms", 0)),
+        "priciest": priciest and (priciest["name"], priciest.get("attrs", {}).get("cost_usd", 0)),
+    }
 
 
 def to_markdown(spans: list[dict]) -> str:
@@ -90,16 +107,24 @@ def to_markdown(spans: list[dict]) -> str:
     if sm["goal"]:
         out.append(f"> **Goal:** {sm['goal']}")
         out.append("")
-    outcome = "completed" + (" after recovering from errors" if sm["recovered"] else "") if not (sm["errors"] and not sm["recovered"]) else "failed"
+    outcome = (
+        "completed" + (" after recovering from errors" if sm["recovered"] else "")
+        if not (sm["errors"] and not sm["recovered"])
+        else "failed"
+    )
     out.append(f"**TL;DR** - {sm['steps']} steps in {sm['seconds']}s, ${sm['cost_usd']:.4f}, {outcome}.")
     if sm["slowest"]:
-        out.append(f"Slowest step: `{sm['slowest'][0]}` ({sm['slowest'][1] / 1000:.1f}s). "
-                   f"Most expensive: `{sm['priciest'][0]}` (${sm['priciest'][1]:.4f}).")
+        out.append(
+            f"Slowest step: `{sm['slowest'][0]}` ({sm['slowest'][1] / 1000:.1f}s). "
+            f"Most expensive: `{sm['priciest'][0]}` (${sm['priciest'][1]:.4f})."
+        )
     out.append("")
     for i, s in enumerate(steps, 1):
         indent = "  " * s["depth"]
         badge = " (error)" if s.get("status") == "error" else ""
-        out.append(f"{indent}{i}. **[{s['offset_s']:>6.2f}s]** {narrate(s)} _{s.get('duration_ms', 0) / 1000:.1f}s_{badge}")
+        out.append(
+            f"{indent}{i}. **[{s['offset_s']:>6.2f}s]** {narrate(s)} _{s.get('duration_ms', 0) / 1000:.1f}s_{badge}"
+        )
     return "\n".join(out) + "\n"
 
 
@@ -110,9 +135,11 @@ def to_html(spans: list[dict]) -> str:
     for i, s in enumerate(steps, 1):
         err = s.get("status") == "error"
         body = html.escape(narrate(s)).replace("**", "")
-        cards.append(f'<section class="step{" err" if err else ""}" data-i="{i - 1}"><div class="meta">Step {i} of {len(steps)} &middot; '
-                     f'+{s["offset_s"]:.2f}s &middot; {s.get("duration_ms", 0) / 1000:.1f}s &middot; {html.escape(s["kind"])}</div>'
-                     f'<h2>{html.escape(s["name"])}</h2><p>{body}</p></section>')
+        cards.append(
+            f'<section class="step{" err" if err else ""}" data-i="{i - 1}"><div class="meta">Step {i} of {len(steps)} &middot; '
+            f"+{s['offset_s']:.2f}s &middot; {s.get('duration_ms', 0) / 1000:.1f}s &middot; {html.escape(s['kind'])}</div>"
+            f"<h2>{html.escape(s['name'])}</h2><p>{body}</p></section>"
+        )
     title = html.escape(root["name"] if root else "Agent run")
     goal = html.escape(sm["goal"])
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -125,9 +152,9 @@ body{{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans
 button{{padding:8px 16px;border-radius:8px;border:1px solid var(--muted);background:var(--card);color:var(--fg);cursor:pointer}}
 .bar{{height:4px;background:var(--muted);border-radius:2px;overflow:hidden}}.bar i{{display:block;height:100%;background:var(--accent);width:0}}
 </style></head><body><main><h1>{title}</h1><p class="meta">{goal}</p>
-<p>{sm['steps']} steps &middot; {sm['seconds']}s &middot; ${sm['cost_usd']:.4f} &middot; {sm['errors']} error(s)</p>
+<p>{sm["steps"]} steps &middot; {sm["seconds"]}s &middot; ${sm["cost_usd"]:.4f} &middot; {sm["errors"]} error(s)</p>
 <div class="bar"><i id="bar"></i></div><nav><button id="prev">&larr; Prev</button><button id="next">Next &rarr;</button></nav>
-{''.join(cards)}</main><script>
+{"".join(cards)}</main><script>
 const s=[...document.querySelectorAll('.step')];let i=0;const bar=document.getElementById('bar');
 function show(n){{i=Math.max(0,Math.min(s.length-1,n));s.forEach((e,k)=>e.classList.toggle('on',k===i));bar.style.width=((i+1)/s.length*100)+'%';}}
 document.getElementById('prev').onclick=()=>show(i-1);document.getElementById('next').onclick=()=>show(i+1);

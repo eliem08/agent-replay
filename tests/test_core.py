@@ -34,8 +34,20 @@ class Tests(unittest.TestCase):
         self.assertIn("TimeoutError", md)
 
     def test_html_escapes_and_steps(self):
-        spans = self.spans + [{"trace_id": "t1", "span_id": "z", "parent_id": "a", "name": "<script>x</script>", "kind": "step",
-                               "start": 1043, "duration_ms": 1, "attrs": {}, "status": "ok"}]
+        spans = [
+            *self.spans,
+            {
+                "trace_id": "t1",
+                "span_id": "z",
+                "parent_id": "a",
+                "name": "<script>x</script>",
+                "kind": "step",
+                "start": 1043,
+                "duration_ms": 1,
+                "attrs": {},
+                "status": "ok",
+            },
+        ]
         page = to_html(spans)
         self.assertNotIn("<script>x</script>", page)
         self.assertEqual(page.count('class="step'), 6)
@@ -44,7 +56,13 @@ class Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = os.path.join(d, "steps.json")
             with open(p, "w") as fh:
-                json.dump([{"name": "open", "kind": "tool", "duration_ms": 500}, {"name": "click", "kind": "tool", "duration_ms": 200}], fh)
+                json.dump(
+                    [
+                        {"name": "open", "kind": "tool", "duration_ms": 500},
+                        {"name": "click", "kind": "tool", "duration_ms": 200},
+                    ],
+                    fh,
+                )
             spans = load_spans(p)
             self.assertEqual(len(build_steps(spans)[1]), 2)
             self.assertIn("2 steps", to_markdown(spans))
