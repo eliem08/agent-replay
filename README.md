@@ -1,16 +1,44 @@
-# agent-replay
+<!-- sell-kit:start -->
+# Agent Replay
 
 [![CI](https://github.com/eliem08/agent-replay/actions/workflows/ci.yml/badge.svg)](https://github.com/eliem08/agent-replay/actions/workflows/ci.yml)
 
-> **Loom for agents** — a walkthrough of everything your agent did.
+> **A shareable walkthrough of everything your agent did.**
 
-Traces are for engineers. Your boss, your client or your future self wants
-the story: *what did the agent do, in what order, why did it take 4 minutes
-and where did it go wrong?* `agent-replay` turns an agent trace into a
-narrated walkthrough — Markdown for PRs and docs, and a self-contained HTML
-"player" you can click through step by step.
+**Who it's for:** Teams who need to show stakeholders or customers what an agent did and why.
 
-## What the MVP does
+**The problem:** Agent traces are unreadable JSON, so nobody outside engineering can review an agent's work.
+
+**What you get:** Turn a trace into a narrated Markdown report and a single-file HTML player you can send to anyone.
+
+## Quickstart
+
+Customers receive a release archive with the wheel and the examples. Python 3.10+ and no other dependencies.
+
+```bash
+pip install agent_replay-0.1.0-py3-none-any.whl
+agent-replay md examples/trace.jsonl
+agent-replay html examples/trace.jsonl -o replay.html
+```
+
+## Pricing
+
+Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless noted.
+
+| Plan | Price | Includes |
+|---|---|---|
+| **Solo** | $12 per month | Unlimited replays; Markdown and HTML player |
+| **Team** | $59 per month | 10 seats; Branded players; Redaction controls |
+| **Business** | $249 per month | Unlimited seats; Customer-facing replays; Priority support |
+
+To start a trial or buy a plan, email **sales@YOUR-DOMAIN.com**.
+
+## Licence
+
+Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a paid plan or an active trial; see [LICENSE](LICENSE).
+<!-- sell-kit:end -->
+
+## What it does
 
 - Reads **agent-tracer JSONL** spans (or a simple `steps.json` list)
 - Builds chapters from top-level steps, nests sub-steps, computes time offsets

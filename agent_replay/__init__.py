@@ -1,4 +1,4 @@
-"""Loom for agents: a walkthrough of everything your agent did."""
+"""Agent Replay: A shareable walkthrough of everything your agent did."""
 
 from .core import *
 
