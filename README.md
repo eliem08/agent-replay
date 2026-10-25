@@ -46,7 +46,7 @@ Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless
 | **Team** | $59 per month | 10 seats; Branded players; Redaction controls |
 | **Business** | $249 per month | Unlimited seats; Customer-facing replays; Priority support |
 
-To start a trial or buy a plan, email **sales@YOUR-DOMAIN.com**.
+To start a trial or buy a plan, [request access](https://github.com/eliem08/agent-replay/issues/new?title=Agent%20Replay%20trial&labels=sales).
 
 ## Licence
 
