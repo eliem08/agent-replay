@@ -6,7 +6,7 @@ import sys
 from .core import load_spans, to_html, to_markdown
 
 
-def _run(argv=None):
+def build_parser():
     ap = argparse.ArgumentParser(prog="agent-replay")
     sub = ap.add_subparsers(dest="cmd", required=True)
     m = sub.add_parser("md")
@@ -14,6 +14,11 @@ def _run(argv=None):
     h = sub.add_parser("html")
     h.add_argument("trace")
     h.add_argument("-o", "--out", default="replay.html")
+    return ap
+
+
+def _run(argv=None):
+    ap = build_parser()
     a = ap.parse_args(argv)
     spans = load_spans(a.trace)
     if a.cmd == "md":
