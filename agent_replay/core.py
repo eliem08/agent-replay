@@ -13,6 +13,8 @@ def load_spans(path: str) -> list[dict]:
         text = fh.read().strip()
     if text.startswith("["):
         steps = json.loads(text)
+        if not all(isinstance(s, dict) for s in steps):
+            raise ValueError(f"{path}: expected a JSON list of step objects")
         t = 0.0
         spans = []
         for i, s in enumerate(steps):
@@ -32,7 +34,10 @@ def load_spans(path: str) -> list[dict]:
             )
             t += dur / 1000
         return spans
-    return [json.loads(l) for l in text.splitlines() if l.strip()]
+    rows = [json.loads(l) for l in text.splitlines() if l.strip()]
+    if not all(isinstance(r, dict) for r in rows):
+        raise ValueError(f"{path}: expected one JSON object per line")
+    return rows
 
 
 def build_steps(spans: list[dict]) -> tuple[dict | None, list[dict]]:
