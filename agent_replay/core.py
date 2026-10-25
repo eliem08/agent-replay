@@ -9,7 +9,7 @@ __all__ = ["load_spans", "build_steps", "narrate", "summary", "to_markdown", "to
 
 
 def load_spans(path: str) -> list[dict]:
-    with open(path, encoding="utf-8") as fh:
+    with open(path, encoding="utf-8-sig") as fh:
         text = fh.read().strip()
     if text.startswith("["):
         steps = json.loads(text)
