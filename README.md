@@ -54,15 +54,18 @@ Buyers pick a plan on `/pricing`, pay on Stripe Checkout and see their API key o
 
 ## Pricing
 
-Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless noted.
+Monthly plans start with a 14-day free trial. Prices in USD, billed monthly unless noted.
 
 | Plan | Price | Includes |
 |---|---|---|
 | **Solo** | $12 per month | Unlimited replays; Markdown and HTML player |
-| **Team** | $59 per month | 10 seats; Branded players; Redaction controls |
+| **Team** | $59 per month | 10 seats; Hosted API |
 | **Business** | $249 per month | Unlimited seats; Customer-facing replays; Priority support |
 
 To start a trial or buy a plan, [request access](https://github.com/eliem08/agent-replay/issues/new?title=Agent%20Replay%20trial&labels=sales).
+
+Plan note: every plan runs the same software, and every API key unlocks all of it. Seat, agent and volume
+limits are licence terms; the code does not enforce them. Support, SLA and done-for-you items are services.
 
 ## Licence
 
