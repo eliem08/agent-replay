@@ -54,4 +54,19 @@ SPEC = {
             "id": "html",
         },
     ],
+    "plans": [
+        {
+            "key": "solo",
+            "name": "Solo",
+            "price": "$12 per month",
+            "features": ["Unlimited replays", "Markdown and HTML player"],
+        },
+        {"key": "team", "name": "Team", "price": "$59 per month", "features": ["10 seats", "Hosted API"]},
+        {
+            "key": "business",
+            "name": "Business",
+            "price": "$249 per month",
+            "features": ["Unlimited seats", "Customer-facing replays", "Priority support"],
+        },
+    ],
 }
